@@ -108,6 +108,19 @@ class Board{
   }
 
 
+  highlightSquare(indexX, indexY, color){
+    $('#highlight').remove()
+    $("#board").append('<svg id="highlight"><rect x="'+ (indexX - 1) * 62.5+'" y="'+ (indexY - 1) * 62.5+'" width="63" height="63" style="fill:'+color+'; stroke-width:5;opacity:0.4" /></svg>');
+  }
+
+  clicked(e){
+
+  }
+
+
+
+
+
 }
 
 
@@ -115,5 +128,6 @@ class Board{
 
 
 var board = new Board("brbnbbbqbkbbbnbrbpbpbpbpbpbpbpbp0000000000000000000000000000000000000000wn0000000000000000000000wpwpwpwpwpwpwpwpwrwnwbwqwkwbwnwr");
+board.highlightSquare(5,1, "#FFFF00");
 var knight = new Knight();
 console.log(knight);
