@@ -7,7 +7,7 @@ var boardDOM = $("#board")
 
 
 
-//movePiece(wKnight, 100, 100);
+//    movePiece(wKnight, 100, 100);
 
 
 
@@ -19,3 +19,24 @@ $('#board').click(function(e){
 
   board.highlightSquare(indexx, indexy, "#FFFF00");
 });
+
+
+
+
+
+Draggable.create(".piece", {
+  type:"x,y",
+  onDrag: function(event){
+  },
+  onDragEnd: function(event){
+    console.log(this);
+
+    const x = event.x;
+    const y = event.y;
+    const indexX = Math.floor((x + 62) / 62.5);
+    const indexY = Math.floor((x + 62) / 62.5);
+    console.log(this.target);
+    movePiece(this.target, indexX, indexY, "");
+    console.log(indexX + ", " + indexY);
+  }
+})
