@@ -41,25 +41,26 @@ wr wn wb wk wq wb wn wr
 brbkbbbkbqbbbnbrbpbpbpbpbpbpbpbp0000000000000000000000000000000000000000000000000000000000000000wpwpwpwpwpwpwpwpwrwnwbwkwqwbwnwr
 128 character string
 */
-function movePiece(piece, x, y){
-  let image = $('<svg><image x="' + x + '" y="'+y+'" width="63" height="63" xlink:href="'+ piece +'"> <image/></svg>');
-  $("#board").append(image);
+function movePiece(piece, x, y, id){
+  let image = $('<svg><image id="' + id +'" class="piece" x="' + x + '" y="'+y+'" width="63" height="63" xlink:href="'+ piece +'"> <image/></svg>');
+  $("#container").append(image);
 
 }
 
 
 class Piece{
-  constructor(type, xindex = 0, yindex = 0, movement = []) {
+  constructor(type, id, xindex = 0, yindex = 0, movement = []) {
     this.type = type;
     this.xindex = xindex;
     this.yindex = yindex;
+    this.id = id;
 
     // Defines piece movement with indexing based on the board being a gride of indexes
     // [xmov, ymov]
     this.movement = movement;
   }
 
-  move(piece, x, y){
+  move(x, y){
 
   }
 
@@ -75,13 +76,53 @@ class Knight extends Piece{
 
 }
 
+class Bishop extends Piece{
+  constructor() {
+    const movement = [ [-1, -2], [1, -2], [-2, - 1], [2, -1], [-2, 1], [2, 1], [-1,2], [1,2] ];
+    for (var i = 1; i < 9; i++) {
+      movement.push([i,i]);
+      movement.push([-i,-i]);
+      movement.push([-i,i]);
+      movement.push([i,-i]);
+    }
+
+    super("Bishop", 0, 0, movement);
+
+
+  }
+
+}
+
+
+class Rook extends Piece{
+  constructor() {
+
+    var movement = [  ];
+
+    for (var i = 1; i < 9; i++) {
+      movement.push([0,i]);
+      movement.push([0,-i]);
+      movement.push([i,0]);
+      movement.push([-i,0]);
+    }
+    super("Rook", 0, 0, movement);
+
+
+  }
+
+}
+
+
+
+
+
 class Board{
 
   constructor(initialid) {
 
     this.currentId = initialid;
     this.udateBoard(initialid);
-
+    this.highlightIndex = []; // First Number is x second number is y
   }
 
   udateBoard(){
@@ -101,7 +142,7 @@ class Board{
         console.log(pieceLink);
         console.log( "(" + xindex + ", " + yindex +")" );
 
-        movePiece(pieceLink, 62.5 * xindex - 62, 62.5 * yindex - 62)
+        movePiece(pieceLink, 62.5 * xindex - 62, 62.5 * yindex - 62, setup[i] + xindex+ "." + yindex);
 
       }
     }
@@ -111,11 +152,11 @@ class Board{
   highlightSquare(indexX, indexY, color){
     $('#highlight').remove()
     $("#board").append('<svg id="highlight"><rect x="'+ (indexX - 1) * 62.5+'" y="'+ (indexY - 1) * 62.5+'" width="63" height="63" style="fill:'+color+'; stroke-width:5;opacity:0.4" /></svg>');
+    this.highlightIndex = [indexX, indexY];
+    console.log(this.highlightIndex);
   }
 
-  clicked(e){
 
-  }
 
 
 
