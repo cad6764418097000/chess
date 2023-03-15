@@ -10,13 +10,18 @@
   <body>
     <div class="board">
     <svg height="500" width="500" id="board">
-      <image onclick="board.clicked()" x="0" y="0" width="500" height="500" xlink:href="https://images.chesscomfiles.com/chess-themes/boards/green/150.png"></image>
+      <image x="0" y="0" width="500" height="500" xlink:href="https://images.chesscomfiles.com/chess-themes/boards/green/150.png"></image>
+      <g id="container">
 
+      </g>
     </svg>
 
     <svg height="100" width="100">
     </svg>
   </div>
+  <script src="https://unpkg.co/gsap@3/dist/gsap.min.js"></script>
+
+  <script src="https://unpkg.com/gsap@3/dist/Draggable.min.js"></script>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
   <script src="boardindexing.js"></script>
