@@ -2,7 +2,7 @@
 const pieceSize = 63;
 
 
-var boardDOM = $("#board")
+var boardDOM = $("#board");
 
 
 
@@ -35,8 +35,11 @@ Draggable.create(".piece", {
     const y = event.y;
     const indexX = Math.floor((x + 62) / 62.5);
     const indexY = Math.floor((x + 62) / 62.5);
-    console.log(this.target);
-    movePiece(this.target, indexX, indexY, "");
+    index = board.pieceAt(indexX, indexY);
+    //console.log(this.target);
+    console.log(board.pieces[index]);
+
+    board.pieces[index].movePiece(indexX, indexY);
     console.log(indexX + ", " + indexY);
   }
 })
