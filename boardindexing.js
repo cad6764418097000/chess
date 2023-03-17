@@ -49,27 +49,43 @@ function movePiece(piece, x, y, id){
 
 
 class Piece{
-  constructor(type, id, xindex = 0, yindex = 0, movement = []) {
+  constructor(type, color, num, xindex = 0, yindex = 0, movement = []) {
+
+    //Initialize Piece
+    const pieceId =  color.charAt(0) + type.charAt(0) + num;
+    const pieceLink = "https://www.chess.com/chess-themes/pieces/neo/150/" + pieceId.substr(0, 2) + ".png";
+    const image = $('<svg><image id="' + pieceId +'" class="piece" x="' + xindex + '" y="'+yindex+'" width="63" height="63" xlink:href="'+ pieceLink +'"> <image/></svg>');
+    $("#container").append(image);
+
+
     this.type = type;
     this.xindex = xindex;
     this.yindex = yindex;
-    this.id = id;
+    this.svg = image;
+
 
     // Defines piece movement with indexing based on the board being a gride of indexes
     // [xmov, ymov]
     this.movement = movement;
   }
 
-  move(x, y){
+  move(xIndex, yIndex){
+    this.xindex = xIndex;
+    this.yindex = yIndex;
+
+    this.svg.attr('x', String(62.5 * xIndex - 62));
+    this.svg.attr('y', String(62.5 * yIndex - 62));
 
   }
 
 }
 
 class Knight extends Piece{
-  constructor() {
+  constructor(color, num) {
     const movement = [ [-1, -2], [1, -2], [-2, - 1], [2, -1], [-2, 1], [2, 1], [-1,2], [1,2] ];
-    super("Knight", 0, 0, movement);
+
+
+    super("knight", color, num, 0, 0, movement);
 
 
   }
@@ -77,8 +93,8 @@ class Knight extends Piece{
 }
 
 class Bishop extends Piece{
-  constructor() {
-    const movement = [ [-1, -2], [1, -2], [-2, - 1], [2, -1], [-2, 1], [2, 1], [-1,2], [1,2] ];
+  constructor(color, num) {
+    var movement = [ ];
     for (var i = 1; i < 9; i++) {
       movement.push([i,i]);
       movement.push([-i,-i]);
@@ -86,7 +102,7 @@ class Bishop extends Piece{
       movement.push([i,-i]);
     }
 
-    super("Bishop", 0, 0, movement);
+    super("bishop",color, num, 0, 0, movement);
 
 
   }
@@ -95,7 +111,7 @@ class Bishop extends Piece{
 
 
 class Rook extends Piece{
-  constructor() {
+  constructor(color, num) {
 
     var movement = [  ];
 
@@ -105,9 +121,46 @@ class Rook extends Piece{
       movement.push([i,0]);
       movement.push([-i,0]);
     }
-    super("Rook", 0, 0, movement);
+    super("rook",color, num, 0, 0, movement);
 
 
+  }
+
+}
+
+
+class King extends Piece{
+  constructor(color, num) {
+
+    var movement = [ [-1, 0], [1, 0], [0, 1], [0, -1], [-1, -1], [1, 1], [-1,1], [1, -1] ];
+
+
+    super("king",color, num, 0, 0, movement);
+  }
+
+}
+
+
+class Queen extends Piece{
+  constructor(color, num) {
+
+    var movement = [  ];
+
+    for (var i = 1; i < 9; i++) {
+      movement.push([i,i]);
+      movement.push([-i,-i]);
+      movement.push([-i,i]);
+      movement.push([i,-i]);
+    }
+
+    for (var i = 1; i < 9; i++) {
+      movement.push([0,i]);
+      movement.push([0,-i]);
+      movement.push([i,0]);
+      movement.push([-i,0]);
+    }
+
+    super("queen", color, num, 0, 0, movement);
   }
 
 }
@@ -120,32 +173,65 @@ class Board{
 
   constructor(initialid) {
 
+    this.pieces = []; // array of pieces on the board
     this.currentId = initialid;
-    this.udateBoard(initialid);
+    this.initializeBoard(initialid);
     this.highlightIndex = []; // First Number is x second number is y
   }
 
-  udateBoard(){
+  initializeBoard(){
+
     const setup = this.currentId.match(/.{1,2}/g) ?? []; // Splits string every 2 characters into an array
-    var pieceLink = ""
+
+    var pieceLink = "";
     var xindex = 0;
     var yindex = 0;
+
     for(let i = 0; i < setup.length; i++){
       if (setup[i] == "00") {
         // The Slot is empty do nothing
 
       }else{
 
-        pieceLink = "https://www.chess.com/chess-themes/pieces/neo/150/" + setup[i] + ".png";
+        var piece = null;
+        const color = setup[i].charAt(0);
+
+        switch (setup[i].charAt(1)) {
+          case "k": piece = new King(color, 1);
+            break;
+          case "q": piece = new Queen(color, 1);
+            break;
+          case "r": piece = new Rook(color, 1);
+            break;
+          case "b": piece = new Bishop(color, 1);
+            break;
+          case "n": piece = new Knight(color, 1);
+            break;
+            break;
+          case "p": piece = new Knight(color, 1);
+            break;
+
+
+          default: console.log("Board Id Uncompatible");
+
+        }
+
         xindex = (i % 8) + 1;
         yindex = (Math.floor(i / 8)) + 1;
-        console.log(pieceLink);
-        console.log( "(" + xindex + ", " + yindex +")" );
+        piece.move(xindex, yindex);
+        //console.log(piece);
+        this.pieces.push(piece);
 
-        movePiece(pieceLink, 62.5 * xindex - 62, 62.5 * yindex - 62, setup[i] + xindex+ "." + yindex);
 
       }
     }
+
+
+    // check the piece array
+    console.log(this.pieces);
+
+
+
   }
 
 
@@ -154,6 +240,17 @@ class Board{
     $("#board").append('<svg id="highlight"><rect x="'+ (indexX - 1) * 62.5+'" y="'+ (indexY - 1) * 62.5+'" width="63" height="63" style="fill:'+color+'; stroke-width:5;opacity:0.4" /></svg>');
     this.highlightIndex = [indexX, indexY];
     console.log(this.highlightIndex);
+  }
+
+
+
+  pieceAt(xIndex, yIndex){
+    // Takes index values and returns the pieces at that particular index
+    for (var i = 0; i < this.pieces.length; i++) {
+      if (this.pieces.xindex === xIndex && this.index.y === indexY) {
+        return i;
+      }
+    }
   }
 
 
@@ -170,5 +267,4 @@ class Board{
 
 var board = new Board("brbnbbbqbkbbbnbrbpbpbpbpbpbpbpbp0000000000000000000000000000000000000000wn0000000000000000000000wpwpwpwpwpwpwpwpwrwnwbwqwkwbwnwr");
 board.highlightSquare(5,1, "#FFFF00");
-var knight = new Knight();
-console.log(knight);
+var knight = new Knight("b", 1);
